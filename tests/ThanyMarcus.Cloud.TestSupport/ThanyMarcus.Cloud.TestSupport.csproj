@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>ThanyMarcus.Cloud.Tests</RootNamespace>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NodaTime" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ThanyMarcus.Cloud.Api\ThanyMarcus.Cloud.Api.csproj" />
+    <ProjectReference Include="..\..\src\ThanyMarcus.Shared\ThanyMarcus.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

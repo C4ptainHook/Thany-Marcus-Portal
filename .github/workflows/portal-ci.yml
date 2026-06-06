@@ -1,0 +1,92 @@
+name: portal-ci
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: portal-ci-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      DOTNET_NOLOGO: 'true'
+      DOTNET_CLI_TELEMETRY_OPTOUT: 'true'
+      TESTCONTAINERS_RYUK_DISABLED: 'true'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: cache nuget
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('Directory.Packages.props', '**/*.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: restore
+        run: dotnet restore ThanyMarcus.slnx
+
+      - name: build
+        run: dotnet build ThanyMarcus.slnx -c Release --no-restore
+
+      - name: test portal (unit)
+        run: |
+          dotnet run \
+            --project tests/ThanyMarcus.Portal.UnitTests \
+            -c Release --no-build --no-restore
+
+      - name: test portal (integration)
+        run: |
+          dotnet run \
+            --project tests/ThanyMarcus.Portal.IntegrationTests \
+            -c Release --no-build --no-restore
+
+  images:
+    name: build + push ${{ matrix.image }}
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image: thany-portal-api
+            dockerfile: infra/docker/portal-api/Dockerfile
+          - image: thany-portal-saga-worker
+            dockerfile: infra/docker/saga-worker/Dockerfile
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: lowercase owner
+        run: echo "OWNER_LC=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_ENV"
+
+      - uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          push: true
+          tags: |
+            ghcr.io/${{ env.OWNER_LC }}/${{ matrix.image }}:latest
+            ghcr.io/${{ env.OWNER_LC }}/${{ matrix.image }}:${{ github.sha }}
+          cache-from: type=gha,scope=${{ matrix.image }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.image }}

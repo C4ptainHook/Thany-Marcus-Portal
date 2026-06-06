@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ThanyMarcus.Portal.Api/ThanyMarcus.Portal.Api.csproj" />
+    <Project Path="src/ThanyMarcus.Portal.SagaWorker/ThanyMarcus.Portal.SagaWorker.csproj" />
+    <Project Path="src/ThanyMarcus.Cloud.Api/ThanyMarcus.Cloud.Api.csproj" />
+    <Project Path="src/ThanyMarcus.Shared/ThanyMarcus.Shared.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ThanyMarcus.Portal.UnitTests/ThanyMarcus.Portal.UnitTests.csproj" />
+    <Project Path="tests/ThanyMarcus.Portal.IntegrationTests/ThanyMarcus.Portal.IntegrationTests.csproj" />
+    <Project Path="tests/ThanyMarcus.Cloud.UnitTests/ThanyMarcus.Cloud.UnitTests.csproj" />
+    <Project Path="tests/ThanyMarcus.Cloud.IntegrationTests/ThanyMarcus.Cloud.IntegrationTests.csproj" />
+    <Project Path="tests/ThanyMarcus.Cloud.TestSupport/ThanyMarcus.Cloud.TestSupport.csproj" />
+  </Folder>
+</Solution>

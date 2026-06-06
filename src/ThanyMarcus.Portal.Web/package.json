@@ -1,0 +1,40 @@
+{
+  "name": "thany-marcus.portal.web",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9",
+    "@sveltejs/adapter-static": "^3.0.6",
+    "@sveltejs/kit": "^2.15.0",
+    "@sveltejs/vite-plugin-svelte": "^5.0.0",
+    "eslint": "^9",
+    "eslint-plugin-svelte": "^2",
+    "globals": "^17.6.0",
+    "jsdom": "^29.1.1",
+    "svelte": "^5.16.0",
+    "svelte-check": "^4.1.0",
+    "typescript": "^5.7.0",
+    "typescript-eslint": "^8",
+    "vite": "^6.0.0",
+    "vitest": "^4.1.7"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  },
+  "dependencies": {
+    "svelte-sonner": "1.1.1"
+  }
+}

@@ -1,0 +1,61 @@
+services:
+  portal-api:
+    build:
+      context: .
+      dockerfile: infra/docker/portal-api/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__Portal: ${PORTAL_DB_CONNECTION_STRING}
+      DataProtection__KeyRingPath: /var/lib/portal/data-protection-keys
+      Google__ClientId: ${GOOGLE_CLIENT_ID:-}
+      Google__ClientSecret: ${GOOGLE_CLIENT_SECRET:-}
+      DigitalOcean__OAuth__ClientId: ${DO_OAUTH_CLIENT_ID:-}
+      DigitalOcean__OAuth__ClientSecret: ${DO_OAUTH_CLIENT_SECRET:-}
+      DigitalOcean__OAuth__CallbackUrl: ${DO_OAUTH_CALLBACK_URL:-}
+    volumes:
+      - dp_keys:/var/lib/portal/data-protection-keys
+    networks: [portal]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:8080/health/ready || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  saga-worker:
+    build:
+      context: .
+      dockerfile: infra/docker/saga-worker/Dockerfile
+    restart: unless-stopped
+    environment:
+      DOTNET_ENVIRONMENT: Production
+      ConnectionStrings__Portal: ${PORTAL_DB_CONNECTION_STRING}
+      DataProtection__KeyRingPath: /var/lib/portal/data-protection-keys
+      Provisioning__PortalUrl: ${PROVISIONING_PORTAL_URL}
+      Provisioning__CloudInit__LeEmail: ${CLOUDINIT_LE_EMAIL:-letsencrypt@thany.click}
+      Provisioning__CloudInit__LeAcmeCa: ${CLOUDINIT_LE_ACME_CA:-}
+      Provisioning__CloudInit__ImageTag: ${CLOUDINIT_IMAGE_TAG:-main}
+      Provisioning__CloudInit__SshPublicKey: ${CLOUDINIT_SSH_PUBLIC_KEY:-}
+      Cloudflare__ZoneId: ${CLOUDFLARE_ZONE_ID}
+      Cloudflare__ApiToken: ${CLOUDFLARE_API_TOKEN}
+      SPACES_ACCESS_KEY_ID: ${SPACES_ACCESS_KEY_ID}
+      SPACES_SECRET_ACCESS_KEY: ${SPACES_SECRET_ACCESS_KEY}
+    volumes:
+      - dp_keys:/var/lib/portal/data-protection-keys
+      - terraform_data:/var/lib/portal/terraform
+    networks: [portal]
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 4G
+
+volumes:
+  dp_keys:
+  terraform_data:
+
+networks:
+  portal:
