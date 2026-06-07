@@ -1,8 +1,6 @@
 services:
   portal-api:
-    build:
-      context: .
-      dockerfile: infra/docker/portal-api/Dockerfile
+    image: ghcr.io/c4ptainhook/thany-portal-api:${PORTAL_IMAGE_TAG:-main}
     restart: unless-stopped
     ports:
       - "127.0.0.1:8080:8080"
@@ -26,9 +24,7 @@ services:
       retries: 5
 
   saga-worker:
-    build:
-      context: .
-      dockerfile: infra/docker/saga-worker/Dockerfile
+    image: ghcr.io/c4ptainhook/thany-portal-saga-worker:${PORTAL_IMAGE_TAG:-main}
     restart: unless-stopped
     environment:
       DOTNET_ENVIRONMENT: Production
@@ -41,8 +37,6 @@ services:
       Provisioning__CloudInit__SshPublicKey: ${CLOUDINIT_SSH_PUBLIC_KEY:-}
       Cloudflare__ZoneId: ${CLOUDFLARE_ZONE_ID}
       Cloudflare__ApiToken: ${CLOUDFLARE_API_TOKEN}
-      SPACES_ACCESS_KEY_ID: ${SPACES_ACCESS_KEY_ID}
-      SPACES_SECRET_ACCESS_KEY: ${SPACES_SECRET_ACCESS_KEY}
     volumes:
       - dp_keys:/var/lib/portal/data-protection-keys
       - terraform_data:/var/lib/portal/terraform

@@ -18,6 +18,10 @@ services:
       retries: 10
 
   portal-api:
+    build:
+      context: .
+      dockerfile: infra/docker/portal-api/Dockerfile
+    pull_policy: build
     ports: ["5050:8080"]
     environment:
       ASPNETCORE_ENVIRONMENT: Development
@@ -27,6 +31,10 @@ services:
         condition: service_healthy
 
   saga-worker:
+    build:
+      context: .
+      dockerfile: infra/docker/saga-worker/Dockerfile
+    pull_policy: build
     environment:
       DOTNET_ENVIRONMENT: Development
       ConnectionStrings__Portal: "Host=postgres;Port=5432;Username=postgres;Password=postgres;Database=portal_dev"
