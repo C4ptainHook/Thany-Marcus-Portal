@@ -337,7 +337,7 @@ write_files:
     content: |
       services:
         cloud-api:
-          image: ghcr.io/c4ptainhook/thany-cloud-api:$${IMAGE_TAG:-latest}
+          image: ghcr.io/c4ptainhook/thany-marcus-portal/thany-cloud-api:$${IMAGE_TAG:-latest}
           restart: unless-stopped
           ports:
             - "127.0.0.1:8080:8080"
